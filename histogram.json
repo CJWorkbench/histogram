@@ -22,7 +22,7 @@
       "name": "Replace missing values with",
       "id_name": "replace_missing_number",
       "type": "integer",
-      "default": -1,
+      "default": -1
     }
   ]
 }
