@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <title>Histogram output</title>
+  </head>
+  <body>
+    <main></main>
+    <script src="https://cdn.jsdelivr.net/npm/vega@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+    <script>
+      const main = document.querySelector('main')
+
+      function renderData(spec) {
+        if (!json) {
+          div.textContent = 'No data'
+          return
+        }
+
+        vegaEmbed(main, spec)
+      }
+
+      function startLoading () {
+        div.textContent = 'Loading'
+
+        const url = String(window.location).replace(/\/output.*/, '/embeddata')
+        fetch(url)
+          .then(function(response) {
+            if (!response.ok) {
+              throw new Error('Invalid response code: ' + response.status)
+            }
+
+            return response.json()
+          })
+          .then(renderData)
+          .catch(console.error)
+      }
+
+      window.addEventListener('hashchange', startLoading)
+    </script>
+  </body>
+</html>

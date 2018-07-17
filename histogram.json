@@ -1,0 +1,49 @@
+{
+  "name": "Histogram",
+  "id_name": "histogram",
+  "category" : "Visualize",
+  "icon" : "chart",
+  "description" : "Show distribution of a column",
+  "html_output": true,
+  "help_url":"modules/visualization/histogram",
+  "parameters": [
+    {
+      "name": "Column",
+      "id_name": "column",
+      "type": "column"
+    },
+    {
+      "name": "Data Type",
+      "id_name": "data_type",
+      "type": "menu",
+      "menu_items": "Number|String",
+      "default": 0
+    },
+    {
+      "name": "Number of buckets",
+      "id_name": "n_buckets",
+      "type": "integer",
+      "default": 0
+    },
+    {
+      "name": "Replace missing values with",
+      "id_name": "replace_missing_number",
+      "type": "number",
+      "default": "-1",
+      "visible_if": {
+        "id_name": "data_type",
+        "value": 0
+      }
+    },
+    {
+      "name": "Replace missing values with",
+      "id_name": "replace_missing_string",
+      "type": "string",
+      "default": "<NA>",
+      "visible_if": {
+        "id_name": "data_type",
+        "value": 1
+      }
+    }
+  ]
+}
