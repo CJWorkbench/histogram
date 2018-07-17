@@ -28,7 +28,7 @@
     {
       "name": "Replace missing values with",
       "id_name": "replace_missing_number",
-      "type": "number",
+      "type": "integer",
       "default": "-1",
       "visible_if": {
         "id_name": "data_type",
