@@ -13,19 +13,24 @@
       const main = document.querySelector('main')
 
       function renderData(spec) {
-        if (!json) {
-          div.textContent = 'No data'
+        if (!spec) {
+          main.textContent = 'No data'
           return
         }
+
+        spec = Object.assign({
+            "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
+            "autosize": "fit",
+        }, spec)
 
         vegaEmbed(main, spec)
       }
 
       function startLoading () {
-        div.textContent = 'Loading'
+        main.textContent = 'Loading'
 
         const url = String(window.location).replace(/\/output.*/, '/embeddata')
-        fetch(url)
+          fetch(url, { credentials: 'same-origin' })
           .then(function(response) {
             if (!response.ok) {
               throw new Error('Invalid response code: ' + response.status)
@@ -38,6 +43,8 @@
       }
 
       window.addEventListener('hashchange', startLoading)
+
+      vegaEmbed(main, window.workbench.embeddata)
     </script>
   </body>
 </html>

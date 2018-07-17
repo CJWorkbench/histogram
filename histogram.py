@@ -32,13 +32,13 @@ def render(table, params):
         'data': {'values': values},
         'mark': 'bar',
         'encoding': {
-            'bin': {
+            'x': {
                 'field': 'bin',
                 'type': 'nominal',
                 'axis': {'title': 'Bin'},
             },
-            'n': {
-                'field': 'count',
+            'y': {
+                'field': 'n',
                 'type': 'quantitative',
                 'axis': {'title': 'Count'},
             },
