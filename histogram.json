@@ -13,13 +13,6 @@
       "type": "column"
     },
     {
-      "name": "Data Type",
-      "id_name": "data_type",
-      "type": "menu",
-      "menu_items": "Number|String",
-      "default": 0
-    },
-    {
       "name": "Number of buckets",
       "id_name": "n_buckets",
       "type": "integer",
@@ -29,21 +22,7 @@
       "name": "Replace missing values with",
       "id_name": "replace_missing_number",
       "type": "integer",
-      "default": "-1",
-      "visible_if": {
-        "id_name": "data_type",
-        "value": 0
-      }
-    },
-    {
-      "name": "Replace missing values with",
-      "id_name": "replace_missing_string",
-      "type": "string",
-      "default": "<NA>",
-      "visible_if": {
-        "id_name": "data_type",
-        "value": 1
-      }
+      "default": -1,
     }
   ]
 }
