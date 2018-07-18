@@ -110,16 +110,39 @@ def histogram(values: numpy.ndarray,
     return (counts.tolist(), buckets.tolist())
 
 
+def render_message(table, message):
+    return (table, '', {
+        'title': message,
+        'mark': 'point',
+        'config': {
+            'style': {
+                'cell': {
+                    'stroke': 'transparent',
+                },
+            },
+        },
+    })
+
+
 def render(table, params):
     error = None
     json_dict = None
 
     column = params['column']
+    if not column:
+        return render_message(table, 'Please choose a numeric column')
+
     raw_series = table[column]
-    n_bins = params['n_buckets']
+    n_bins = min(2, max(500, int(params['n_buckets'])))
     replace = float(params['replace_missing_number'])
 
     table_values = safe_values(raw_series, replace)
+    if numpy.min(table_values) == numpy.max(table_values):
+        return render_message(
+            table,
+            'Please choose a numeric column with at least two distinct values'
+        )
+
     counts, ticks = histogram(table_values, n_bins)
 
     bins = [{'min': bounds[0], 'max': bounds[1], 'n': n}
