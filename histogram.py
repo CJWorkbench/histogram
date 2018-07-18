@@ -114,7 +114,8 @@ def render(table, params):
     error = None
     json_dict = None
 
-    raw_series = table[params['column']]
+    column = params['column']
+    raw_series = table[column]
     n_bins = params['n_buckets']
     replace = float(params['replace_missing_number'])
 
@@ -126,6 +127,7 @@ def render(table, params):
 
     json_dict = {
         '$schema': 'https://vega.github.io/schema/vega-lite/v2.0.json',
+        'title': f'Number of {column} records per bin',
         'data': {'values': bins},
         # TODO use Vega-lite "prebinned" feature when it's available.
         # In the meantime, this is modeled after
@@ -139,7 +141,7 @@ def render(table, params):
                     'zero': False,
                 },
                 'axis': {
-                    'title': 'Bin',
+                    'title': f'{column}',
                     'grid': False,
                     'tickCount': n_bins + 1,
                     'values': ticks,
@@ -153,7 +155,7 @@ def render(table, params):
                 'field': 'n',
                 'type': 'quantitative',
                 'axis': {
-                    'title': 'Count',
+                    'title': 'Number of records',
                     'domain': False,
                 },
             },
