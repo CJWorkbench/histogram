@@ -89,8 +89,7 @@
       window.addEventListener('hashchange', startLoading)
       window.addEventListener('resize', resetSize)
 
-      renderData(loadingSpec)
-      resetSize()
+      renderData(window.workbench.embeddata)
     </script>
   </body>
 </html>
