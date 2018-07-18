@@ -4,6 +4,13 @@
     <meta charset="utf-8">
     <title>Histogram output</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vega-embed@3/vega-embed.css">
+    <style>
+      html, body, main {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+      }
+    </style>
   </head>
   <body>
     <main></main>
@@ -12,26 +19,50 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
     <script>
       const main = document.querySelector('main')
+      let vegaViewPromise = Promise.resolve(null)
+
+      const loadingSpec = {
+        "title": "loading",
+        "mark": "point",
+        "config": {
+          "style": {
+            "cell": {
+              "stroke": "transparent"
+            }
+          }
+        }
+      }
+
+      const emptySpec = {
+        "title": "no data",
+        "mark": "point",
+        "config": {
+          "style": {
+            "cell": {
+              "stroke": "transparent"
+            }
+          }
+        }
+      }
 
       function renderData(spec) {
         if (!spec) {
-          main.textContent = 'No data'
-          return
+          spec = emptySpec
         }
 
-        spec = Object.assign({
-            "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
-            "autosize": "fit",
-        }, spec)
-
-        vegaEmbed(main, spec)
+        vegaViewPromise = vegaEmbed(main, spec, {
+          config: {
+            autosize: 'fit',
+          }
+        })
+        resetSize()
       }
 
       function startLoading () {
-        main.textContent = 'Loading'
+        renderData(loadingSpec)
 
         const url = String(window.location).replace(/\/output.*/, '/embeddata')
-          fetch(url, { credentials: 'same-origin' })
+        fetch(url, { credentials: 'same-origin' })
           .then(function(response) {
             if (!response.ok) {
               throw new Error('Invalid response code: ' + response.status)
@@ -43,9 +74,23 @@
           .catch(console.error)
       }
 
-      window.addEventListener('hashchange', startLoading)
+      function resetSize() {
+        vegaViewPromise.then(function (view) {
+          if (view === null) return // init
+          const width = document.body.clientWidth
+          const height = document.body.clientHeight
+          view.view
+            .width(width)
+            .height(height)
+            .run()
+        })
+      }
 
-      vegaEmbed(main, window.workbench.embeddata)
+      window.addEventListener('hashchange', startLoading)
+      window.addEventListener('resize', resetSize)
+
+      renderData(loadingSpec)
+      resetSize()
     </script>
   </body>
 </html>

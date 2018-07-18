@@ -29,6 +29,7 @@ def render(table, params):
               for n, bounds in zip(counts.tolist(), _pairwise(buckets))]
 
     json_dict = {
+        '$schema': 'https://vega.github.io/schema/vega-lite/v2.0.json',
         'data': {'values': values},
         'mark': 'bar',
         'encoding': {
