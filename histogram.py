@@ -25,23 +25,43 @@ def render(table, params):
 
     counts, buckets = numpy.histogram(number_series, bins=n_buckets)
 
-    values = [{'bin': f'[{bounds[0]},{bounds[1]})', 'n': n}
+    values = [{'min': bounds[0], 'max': bounds[1], 'n': n}
               for n, bounds in zip(counts.tolist(), _pairwise(buckets))]
 
     json_dict = {
         '$schema': 'https://vega.github.io/schema/vega-lite/v2.0.json',
         'data': {'values': values},
-        'mark': 'bar',
+        # TODO use Vega-lite "prebinned" feature when it's available.
+        # In the meantime, this is modeled after
+        # https://github.com/vega/vega-lite/issues/2912#issuecomment-388987973
+        'mark': 'rect',
         'encoding': {
             'x': {
-                'field': 'bin',
-                'type': 'nominal',
-                'axis': {'title': 'Bin'},
+                'field': 'min',
+                'type': 'quantitative',
+                'scale': {
+                    'zero': False,
+                },
+                'axis': {
+                    'title': 'Bin',
+                    'grid': False,
+                    'tickCount': n_buckets + 1,
+                    'values': buckets.tolist(),
+                },
             },
-            'y': {
+            'x2': {
+                'field': 'max',
+                'type': 'quantitative',
+            },
+            'y2': {
                 'field': 'n',
                 'type': 'quantitative',
-                'axis': {'title': 'Count'},
+                'axis': {
+                    'title': 'Count',
+                },
+            },
+            'y': {
+                'value': 0,
             },
         },
     }
