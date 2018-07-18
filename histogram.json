@@ -13,10 +13,10 @@
       "type": "column"
     },
     {
-      "name": "Number of buckets",
+      "name": "Suggested number of bins",
       "id_name": "n_buckets",
       "type": "integer",
-      "default": 0
+      "default": 20
     },
     {
       "name": "Replace missing values with",
