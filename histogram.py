@@ -58,6 +58,7 @@ def render(table, params):
                 'type': 'quantitative',
                 'axis': {
                     'title': 'Count',
+                    'domain': False,
                 },
             },
             'y': {

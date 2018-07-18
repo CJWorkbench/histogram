@@ -12,6 +12,7 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        background: white;
       }
     </style>
   </head>
@@ -58,7 +59,12 @@
             autosize: {
               type: 'fit',
               contains: 'padding'
-            }
+            },
+            style: {
+              cell: {
+                stroke: 'transparent',
+              }
+            },
           }
         })
         resetSize()
