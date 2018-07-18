@@ -133,7 +133,7 @@ def render(table, params):
         return render_message(table, 'Please choose a numeric column')
 
     raw_series = table[column]
-    n_bins = min(2, max(500, int(params['n_buckets'])))
+    n_bins = max(2, min(500, int(params['n_buckets'])))
     replace = float(params['replace_missing_number'])
 
     table_values = safe_values(raw_series, replace)
