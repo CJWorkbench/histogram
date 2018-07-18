@@ -185,6 +185,7 @@ def render(table, params):
             'y': {
                 'value': 0,
             },
+            'color': {'value': '#48c8d7'},
         },
     }
 
