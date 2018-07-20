@@ -10,6 +10,6 @@ setup(
     author_email='adam@adamhooper.com',
     url='https://github.com/CJWorkbench/histogram',
     packages=[''],
-    py_modules=['scrapexpathlist'],
+    py_modules=['histogram'],
     install_requires=['pandas==0.23.1']
 )
