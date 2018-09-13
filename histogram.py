@@ -55,14 +55,14 @@ def nice_range(start: float, stop: float, n_ticks: int) -> Tuple[float, float]:
         stop = math.floor(stop * step) / step
         step = _calc_tick_increment(start, stop, n_ticks)
 
-    if step > 0:
-        start = math.floor(start / step) * step
-        stop = math.ceil(stop / step) * step
-        n_ticks = round((stop - start) / step)
-    else:
-        start = math.ceil(start * step) / step
-        stop = math.floor(stop * step) / step
-        n_ticks = round(-step * (stop - start))
+#    if step > 0:
+#        start = math.floor(start / step) * step
+#        stop = math.ceil(stop / step) * step
+#        n_ticks = round((stop - start) / step)
+#    else:
+#        start = math.ceil(start * step) / step
+#        stop = math.floor(stop * step) / step
+#        n_ticks = round(-step * (stop - start))
 
     return start, stop, n_ticks
 
