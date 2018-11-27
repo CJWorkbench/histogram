@@ -122,7 +122,15 @@ def histogram(values: numpy.ndarray,
 
 def render_message(table, message):
     return (table, '', {
-        'title': message,
+        "title": {
+            "text": 'Choose a numeric column',
+            'offset': 15,
+            'color': '#383838',
+            'font': 'Nunito Sans, Helvetica, sans-serif',
+            'fontSize': 25,
+            'fontWeight': 'normal',
+            'anchor': 'middle',
+            },
         'mark': 'point',
         'config': {
             'style': {
@@ -159,7 +167,15 @@ def render(table, params):
 
     json_dict = {
         '$schema': 'https://vega.github.io/schema/vega-lite/v2.0.json',
-        'title': f'Number of {column} records per bin',
+        "title": {
+            "text": f'Number of {column} records per bin',
+            'offset': 15,
+            'color': '#383838',
+            'font': 'Nunito Sans, Helvetica, sans-serif',
+            'fontSize': 20,
+            'fontWeight': 'normal',
+            },
+
         'data': {'values': bins},
         # TODO use Vega-lite "prebinned" feature when it's available.
         # In the meantime, this is modeled after
@@ -177,6 +193,10 @@ def render(table, params):
                     'grid': False,
                     'tickCount': n_bins + 1,
                     'values': ticks,
+                    'tickSize': 3,
+                    'titlePadding': 20,
+                    # 'titleFontSize': 15,
+                    # 'titleFontWeight': 100, -- do not work?
                 },
             },
             'x2': {
@@ -189,12 +209,13 @@ def render(table, params):
                 'axis': {
                     'title': 'Number of records',
                     'domain': False,
+                    'titlePadding': 20,
                 },
             },
             'y': {
                 'value': 0,
             },
-            'color': {'value': '#48c8d7'},
+            'color': {'value': '#FBAA6D'},
         },
     }
 
