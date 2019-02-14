@@ -31,8 +31,6 @@ def _calc_tick_increment(start: float, stop: float, n_ticks: int) -> float:
     else:
         inc = 1
 
-    # For increment < 1, return -1/increment to prevent floating point accuracy problems
-    # ref: https://github.com/d3/d3-array#tickIncrement
     if power >= 0:
         return inc * (10 ** power)
     else:
@@ -45,21 +43,9 @@ def nice_range(start: float, stop: float, n_ticks: int) -> Tuple[float, float]:
 
     Modeled after D3's
     https://github.com/d3/d3-scale/blob/396d1c95fef85241bc3b4b75d747174251ae8e89/src/linear.js
-
-    But we add an extra bin on the end to ensure that the max value has a place to go,
-    and that histograms of integers look good. Also we can handle max==min
     """
-
-    # Degenerate case, one value. Bracket with a bin of width 1 (we may get more, after adjustment)
-    if start==stop:
-        start = math.floor(start)
-        stop = math.ceil(stop)
-        if (start==stop):
-            stop = start+1
-
     step = _calc_tick_increment(start, stop, n_ticks)
 
-    # negative step signals that it's actually the inverse step (see above)
     if step > 0:
         start = math.floor(start / step) * step
         stop = math.ceil(stop / step) * step
@@ -69,26 +55,30 @@ def nice_range(start: float, stop: float, n_ticks: int) -> Tuple[float, float]:
         stop = math.floor(stop * step) / step
         step = _calc_tick_increment(start, stop, n_ticks)
 
-    # Add one more bucket (as compared to d3 algo) by adjusting stop
     if step > 0:
         start = math.floor(start / step) * step
-        stop = (math.ceil(stop / step) + 1) * step
+        stop = math.ceil(stop / step) * step
         n_ticks = round((stop - start) / step)
     else:
         start = math.ceil(start * step) / step
-        stop = (math.floor(stop * step) - 1) / step
+        stop = math.floor(stop * step) / step
         n_ticks = round(-step * (stop - start))
 
     return start, stop, n_ticks
 
 
-def safe_values(series: pandas.Series) -> numpy.ndarray:
-    """Cast series to ndarray of float64. Remove NaN and info rows"""
-
-    # to_numeric: errors become NaN
+def safe_values(series: pandas.Series, replace: float) -> numpy.ndarray:
+    """Cast series to ndarray of float64, replacing errors with `replace`."""
+    # to_numeric: errors become NaN. (numpy doesn't do 'coerce')
     number_series = pandas.to_numeric(series, errors='coerce')
-    number_series.replace([numpy.inf, -numpy.inf], numpy.nan, inplace=True)
-    number_series.dropna(inplace=True)
+
+    # replace NaN (both from original data and from last step) with given value
+    # TODO consider making a separate bin for NaN. Or two separate bins: one
+    # for errors and one for NaN.
+    #
+    # nNAs-from-to_numeric-coerce = nNAs-after-to_numeric - nNAs-before
+    number_series.fillna(replace, inplace=True)
+    number_series.replace([numpy.inf, -numpy.inf], replace, inplace=True)
 
     ret = number_series.values
     return ret.astype(numpy.float64)
@@ -152,12 +142,13 @@ def render(table, params):
 
     raw_series = table[column]
     n_bins = max(2, min(500, int(params['n_buckets'])))
+    replace = float(params['replace_missing_number'])
 
-    table_values = safe_values(raw_series)
-    if len(table_values) == 0:
+    table_values = safe_values(raw_series, replace)
+    if numpy.min(table_values) == numpy.max(table_values):
         return render_message(
             table,
-            'Please choose a column with at least one numeric value'
+            'Please choose a numeric column with at least two distinct values'
         )
 
     counts, ticks = histogram(table_values, n_bins)
