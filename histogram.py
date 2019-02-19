@@ -172,10 +172,15 @@ def render(table, params):
     bins = [{'min': bounds[0], 'max': bounds[1], 'n': n}
             for n, bounds in zip(counts, _pairwise(ticks))]
 
+    if 'title' in params and params['title'] != '':
+        title = params['title']
+    else:
+        title = f'Histogram of {column}'
+
     json_dict = {
         '$schema': 'https://vega.github.io/schema/vega-lite/v2.0.json',
         "title": {
-            "text": f'Number of {column} records per bin',
+            "text": title,
             'offset': 15,
             'color': '#383838',
             'font': 'Nunito Sans, Helvetica, sans-serif',
@@ -214,7 +219,7 @@ def render(table, params):
                 'field': 'n',
                 'type': 'quantitative',
                 'axis': {
-                    'title': 'Number of records',
+                    'title': 'Frequency',
                     'domain': False,
                     'titlePadding': 20,
                 },

@@ -17,6 +17,11 @@
       "id_name": "n_buckets",
       "type": "integer",
       "default": 20
+    },
+    {
+      "name": "Title",
+      "id_name": "title",
+      "type": "string"
     }
   ]
 }
