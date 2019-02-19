@@ -39,33 +39,33 @@ class NiceRangeTest(unittest.TestCase):
 
 class SafeValuesTest(unittest.TestCase):
     def test_convert_float(self):
-        result = safe_values(pandas.Series([1.0, 2.0, 3.0]), 1.0)
+        result = safe_values(pandas.Series([1.0, 2.0, 3.0]))
         expect = numpy.array([1.0, 2.0, 3.0], dtype=numpy.float64)
         self.assertTrue(numpy.array_equal(result, expect))
 
     def test_convert_inf(self):
-        result = safe_values(pandas.Series([1.0, math.inf, -math.inf]), 2.0)
-        expect = numpy.array([1.0, 2.0, 2.0], dtype=numpy.float64)
+        result = safe_values(pandas.Series([1.0, math.inf, -math.inf]))
+        expect = numpy.array([1.0], dtype=numpy.float64)
         self.assertTrue(numpy.array_equal(result, expect))
 
     def test_convert_int(self):
-        result = safe_values(pandas.Series([1, 2, 3]), 1.0)
+        result = safe_values(pandas.Series([1, 2, 3]))
         expect = numpy.array([1.0, 2.0, 3.0], dtype=numpy.float64)
         self.assertTrue(numpy.array_equal(result, expect))
 
     def test_convert_str(self):
-        result = safe_values(pandas.Series(['1', '2', '3']), 1.0)
+        result = safe_values(pandas.Series(['1', '2', '3']))
         expect = numpy.array([1.0, 2.0, 3.0], dtype=numpy.float64)
         self.assertTrue(numpy.array_equal(result, expect))
 
     def test_convert_obj(self):
-        result = safe_values(pandas.Series([1.0, 2.0, None]), 3.0)
-        expect = numpy.array([1.0, 2.0, 3.0], dtype=numpy.float64)
+        result = safe_values(pandas.Series([1.0, 2.0, None]))
+        expect = numpy.array([1.0, 2.0], dtype=numpy.float64)
         self.assertTrue(numpy.array_equal(result, expect))
 
     def test_convert_error(self):
-        result = safe_values(pandas.Series([1.0, 2.0, 'notanumber']), 3.0)
-        expect = numpy.array([1.0, 2.0, 3.0], dtype=numpy.float64)
+        result = safe_values(pandas.Series([1.0, 2.0, 'notanumber']))
+        expect = numpy.array([1.0, 2.0], dtype=numpy.float64)
         self.assertTrue(numpy.array_equal(result, expect))
 
 

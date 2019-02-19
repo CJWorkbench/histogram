@@ -90,18 +90,13 @@ def nice_range(values: np.ndarray, n_bins: int) -> Tuple[float, float]:
     return start, stop, n_bins
 
 
-def safe_values(series: pd.Series, replace: float) -> np.ndarray:
-    """Cast series to ndarray of float64, replacing errors with `replace`."""
-    # to_numeric: errors become NaN. (np doesn't do 'coerce')
-    number_series = pd.to_numeric(series, errors='coerce')
+def safe_values(series: pd.Series) -> np.ndarray:
+    """Cast series to ndarray of float64. Remove NaN and non-numeric rows"""
 
-    # replace NaN (both from original data and from last step) with given value
-    # TODO consider making a separate bin for NaN. Or two separate bins: one
-    # for errors and one for NaN.
-    #
-    # nNAs-from-to_numeric-coerce = nNAs-after-to_numeric - nNAs-before
-    number_series.fillna(replace, inplace=True)
-    number_series.replace([np.inf, -np.inf], replace, inplace=True)
+    # to_numeric: errors become NaN
+    number_series = pd.to_numeric(series, errors='coerce')
+    number_series.replace([np.inf, -np.inf], np.nan, inplace=True)
+    number_series.dropna(inplace=True)
 
     ret = number_series.values
     return ret.astype(np.float64)
@@ -131,10 +126,11 @@ def histogram(values: np.ndarray,
     return (counts.tolist(), buckets.tolist())
 
 
+# Displays message in chart output, but not module error
 def render_message(table, message):
     return (table, '', {
-        "title": {
-            "text": 'Choose a numeric column',
+        "title": {  
+            "text": message,
             'offset': 15,
             'color': '#383838',
             'font': 'Nunito Sans, Helvetica, sans-serif',
@@ -163,13 +159,12 @@ def render(table, params):
 
     raw_series = table[column]
     n_bins = max(2, min(500, int(params['n_buckets'])))
-    replace = float(params['replace_missing_number'])
 
-    table_values = safe_values(raw_series, replace)
-    if np.min(table_values) == np.max(table_values):
+    table_values = safe_values(raw_series)
+    if len(table_values) < 2:
         return render_message(
             table,
-            'Please choose a numeric column with at least two distinct values'
+            'Please choose a numeric column with at least two numeric values'
         )
 
     counts, ticks = histogram(table_values, n_bins)
