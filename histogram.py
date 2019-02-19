@@ -1,7 +1,7 @@
 import itertools
 import math
-import numpy
-import pandas
+import numpy as np
+import pandas as pd
 from typing import List, Tuple
 
 
@@ -31,46 +31,69 @@ def _calc_tick_increment(start: float, stop: float, n_ticks: int) -> float:
     else:
         inc = 1
 
+    # For increment < 1, return -1/increment to prevent floating point accuracy problems
+    # ref: https://github.com/d3/d3-array#tickIncrement
     if power >= 0:
         return inc * (10 ** power)
     else:
         return -(10 ** -power) / inc
 
 
-def nice_range(start: float, stop: float, n_ticks: int) -> Tuple[float, float]:
+def nice_range(values: np.ndarray, n_bins: int) -> Tuple[float, float]:
     """
     Calculate a (start, stop, n_bins) that will make for round-ish ticks.
 
     Modeled after D3's
     https://github.com/d3/d3-scale/blob/396d1c95fef85241bc3b4b75d747174251ae8e89/src/linear.js
     """
-    step = _calc_tick_increment(start, stop, n_ticks)
+    start = values.min()
+    stop = values.max()
 
+    step = _calc_tick_increment(start, stop, n_bins)
+
+    # If every value is on a tick, then this is probably quantized data.
+    # Ensure the scale doesn't put the two largest values in the same bucket
+    # So [1,2,3,4,5] should give five buckets, not 4
+    additional_step = 0
+    if step > 0:
+        if not np.any(np.mod(values, step)):
+            additional_step = 1
+    else:
+        # equivalent to not np.any(np.mod(values, 1/step))
+        # Note, this is the path that values=[1,2,3,4,5,6], n_bins=6 will hit 
+        # (step=-1 then as (6-1)/6 < 1)
+        if not np.any(np.mod(values*step, 1)):
+            additional_step = 1
+
+    # negative step signals that it's actually the inverse step (see _calc_tick_increment)
     if step > 0:
         start = math.floor(start / step) * step
         stop = math.ceil(stop / step) * step
-        step = _calc_tick_increment(start, stop, n_ticks)
+        step = _calc_tick_increment(start, stop, n_bins)
     else:
         start = math.ceil(start * step) / step
         stop = math.floor(stop * step) / step
-        step = _calc_tick_increment(start, stop, n_ticks)
+        step = _calc_tick_increment(start, stop, n_bins)
 
+    # d3 algo calls _cal_tick_increment twice, in case first shifts range 
+    # sufficiently that a better step size is available. We follow their 
+    # logic and also maybe add an extra step for quantized values
     if step > 0:
         start = math.floor(start / step) * step
-        stop = math.ceil(stop / step) * step
-        n_ticks = round((stop - start) / step)
+        stop = (math.ceil(stop / step) + additional_step) * step
+        n_bins = round((stop - start) / step)
     else:
         start = math.ceil(start * step) / step
-        stop = math.floor(stop * step) / step
-        n_ticks = round(-step * (stop - start))
+        stop = (math.floor(stop * step) - additional_step) / step
+        n_bins = round(-step * (stop - start))
 
-    return start, stop, n_ticks
+    return start, stop, n_bins
 
 
-def safe_values(series: pandas.Series, replace: float) -> numpy.ndarray:
+def safe_values(series: pd.Series, replace: float) -> np.ndarray:
     """Cast series to ndarray of float64, replacing errors with `replace`."""
-    # to_numeric: errors become NaN. (numpy doesn't do 'coerce')
-    number_series = pandas.to_numeric(series, errors='coerce')
+    # to_numeric: errors become NaN. (np doesn't do 'coerce')
+    number_series = pd.to_numeric(series, errors='coerce')
 
     # replace NaN (both from original data and from last step) with given value
     # TODO consider making a separate bin for NaN. Or two separate bins: one
@@ -78,13 +101,13 @@ def safe_values(series: pandas.Series, replace: float) -> numpy.ndarray:
     #
     # nNAs-from-to_numeric-coerce = nNAs-after-to_numeric - nNAs-before
     number_series.fillna(replace, inplace=True)
-    number_series.replace([numpy.inf, -numpy.inf], replace, inplace=True)
+    number_series.replace([np.inf, -np.inf], replace, inplace=True)
 
     ret = number_series.values
-    return ret.astype(numpy.float64)
+    return ret.astype(np.float64)
 
 
-def histogram(values: numpy.ndarray,
+def histogram(values: np.ndarray,
               n_bins: int) -> Tuple[List[float], List[float]]:
     """
     Computes (counts, ticks).
@@ -98,15 +121,13 @@ def histogram(values: numpy.ndarray,
     that are round numbers when possible.
 
     See
-    https://docs.scipy.org/doc/numpy-1.14.5/reference/generated/numpy.histogram.html
+    https://docs.scipy.org/doc/np-1.14.5/reference/generated/np.histogram.html
     for a longer description of return values.
     """
-    low = values.min()
-    high = values.max()
 
-    low, high, n_bins = nice_range(low, high, n_bins)
+    low, high, n_bins = nice_range(values, n_bins)
 
-    counts, buckets = numpy.histogram(values, bins=n_bins, range=(low, high))
+    counts, buckets = np.histogram(values, bins=n_bins, range=(low, high))
     return (counts.tolist(), buckets.tolist())
 
 
@@ -145,7 +166,7 @@ def render(table, params):
     replace = float(params['replace_missing_number'])
 
     table_values = safe_values(raw_series, replace)
-    if numpy.min(table_values) == numpy.max(table_values):
+    if np.min(table_values) == np.max(table_values):
         return render_message(
             table,
             'Please choose a numeric column with at least two distinct values'
