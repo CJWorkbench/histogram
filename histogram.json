@@ -3,7 +3,7 @@
   "id_name": "histogram",
   "category" : "Visualize",
   "icon" : "chart",
-  "description" : "Show distribution of a column",
+  "description" : "Visualize the distribution of a column in a histogram chart",
   "html_output": true,
   "help_url":"modules/visualization/histogram",
   "parameters": [
