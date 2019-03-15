@@ -31,7 +31,8 @@ def _calc_tick_increment(start: float, stop: float, n_ticks: int) -> float:
     else:
         inc = 1
 
-    # For increment < 1, return -1/increment to prevent floating point accuracy problems
+    # For increment < 1, return -1/increment to prevent floating point accuracy
+    # problems.
     # ref: https://github.com/d3/d3-array#tickIncrement
     if power >= 0:
         return inc * (10 ** power)
@@ -60,12 +61,13 @@ def nice_range(values: np.ndarray, n_bins: int) -> Tuple[float, float]:
             additional_step = 1
     else:
         # equivalent to not np.any(np.mod(values, 1/step))
-        # Note, this is the path that values=[1,2,3,4,5,6], n_bins=6 will hit 
+        # Note, this is the path that values=[1,2,3,4,5,6], n_bins=6 will hit
         # (step=-1 then as (6-1)/6 < 1)
         if not np.any(np.mod(values*step, 1)):
             additional_step = 1
 
-    # negative step signals that it's actually the inverse step (see _calc_tick_increment)
+    # negative step signals that it's actually the inverse step (see
+    # _calc_tick_increment)
     if step > 0:
         start = math.floor(start / step) * step
         stop = math.ceil(stop / step) * step
@@ -75,8 +77,8 @@ def nice_range(values: np.ndarray, n_bins: int) -> Tuple[float, float]:
         stop = math.floor(stop * step) / step
         step = _calc_tick_increment(start, stop, n_bins)
 
-    # d3 algo calls _cal_tick_increment twice, in case first shifts range 
-    # sufficiently that a better step size is available. We follow their 
+    # d3 algo calls _cal_tick_increment twice, in case first shifts range
+    # sufficiently that a better step size is available. We follow their
     # logic and also maybe add an extra step for quantized values
     if step > 0:
         start = math.floor(start / step) * step
@@ -129,7 +131,7 @@ def histogram(values: np.ndarray,
 # Displays message in chart output, but not module error
 def render_message(table, message):
     return (table, '', {
-        "title": {  
+        "title": {
             "text": message,
             'offset': 15,
             'color': '#383838',

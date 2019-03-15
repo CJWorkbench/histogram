@@ -9,31 +9,42 @@ from histogram import nice_range, safe_values, histogram
 
 class NiceRangeTest(unittest.TestCase):
     def test_big_numbers(self):
-        self.assertEqual(nice_range(numpy.array([240, 333.3, 12314]), 13), (0, 13000, 13))
+        self.assertEqual(nice_range(numpy.array([240, 333.3, 12314]), 13),
+                         (0, 13000, 13))
 
     def test_across_zero(self):
         self.assertEqual(nice_range(numpy.array([-8, 22]), 4), (-10, 30, 4))
 
     def test_small_numbers(self):
-        self.assertEqual(nice_range(numpy.array([0.1, 0.41]), 16), (0.1, 0.42, 16))
+        self.assertEqual(nice_range(numpy.array([0.1, 0.41]), 16),
+                         (0.1, 0.42, 16))
 
     def test_small_numbers_across_zero(self):
-        self.assertEqual(nice_range(numpy.array([-0.04, 0.8]), 9), (-0.1, 0.8, 9))
+        self.assertEqual(nice_range(numpy.array([-0.04, 0.8]), 9),
+                         (-0.1, 0.8, 9))
 
     def test_sugests_better_n_ticks(self):
-        self.assertEqual(nice_range(numpy.array([-0.04, 0.8]), 10), (-0.1, 0.8, 9))
+        self.assertEqual(nice_range(numpy.array([-0.04, 0.8]), 10),
+                         (-0.1, 0.8, 9))
 
     def test_integer_ticks(self):
         # Tests adding of additional tick in "die roll" example
-        self.assertEqual(nice_range(numpy.array([1,2,3,4,5,6]), 5), (1,7,6))
-        self.assertEqual(nice_range(numpy.array([1,2,3,4,5,6]), 6), (1,7,6))
-        self.assertEqual(nice_range(numpy.array([1,2,3,4,5,6]), 7), (1,7,6))
+        self.assertEqual(nice_range(numpy.array([1, 2, 3, 4, 5, 6]), 5),
+                         (1, 7, 6))
+        self.assertEqual(nice_range(numpy.array([1, 2, 3, 4, 5, 6]), 6),
+                         (1, 7, 6))
+        self.assertEqual(nice_range(numpy.array([1, 2, 3, 4, 5, 6]), 7),
+                         (1, 7, 6))
 
     def test_integer_ticks_half_buckets(self):
-        # If we end up with ticks 0.5 apart, all buckets should still be evenly spaced
-        self.assertEqual(nice_range(numpy.array([1,2,3,4,5,6]), 10), (1,6.5,11))
-        self.assertEqual(nice_range(numpy.array([1,2,3,4,5,6]), 11), (1,6.5,11))
-        self.assertEqual(nice_range(numpy.array([1,2,3,4,5,6]), 12), (1,6.5,11))
+        # If we end up with ticks 0.5 apart, all buckets should still be evenly
+        # spaced
+        self.assertEqual(nice_range(numpy.array([1, 2, 3, 4, 5, 6]), 10),
+                         (1, 6.5, 11))
+        self.assertEqual(nice_range(numpy.array([1, 2, 3, 4, 5, 6]), 11),
+                         (1, 6.5, 11))
+        self.assertEqual(nice_range(numpy.array([1, 2, 3, 4, 5, 6]), 12),
+                         (1, 6.5, 11))
         pass
 
 
