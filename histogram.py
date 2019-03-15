@@ -2,6 +2,7 @@ import itertools
 import math
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
 from typing import List, Tuple
 
 
@@ -77,7 +78,7 @@ def nice_range(values: np.ndarray, n_bins: int) -> Tuple[float, float]:
         stop = math.floor(stop * step) / step
         step = _calc_tick_increment(start, stop, n_bins)
 
-    # d3 algo calls _cal_tick_increment twice, in case first shifts range
+    # d3 algo calls _calc_tick_increment twice, in case first shifts range
     # sufficiently that a better step size is available. We follow their
     # logic and also maybe add an extra step for quantized values
     if step > 0:
@@ -93,15 +94,8 @@ def nice_range(values: np.ndarray, n_bins: int) -> Tuple[float, float]:
 
 
 def safe_values(series: pd.Series) -> np.ndarray:
-    """Cast series to ndarray of float64. Remove NaN and non-numeric rows"""
-
-    # to_numeric: errors become NaN
-    number_series = pd.to_numeric(series, errors='coerce')
-    number_series.replace([np.inf, -np.inf], np.nan, inplace=True)
-    number_series.dropna(inplace=True)
-
-    ret = number_series.values
-    return ret.astype(np.float64)
+    """Cast series to ndarray[numeric]; remove NaN, Inf, -Inf."""
+    return series[~series.isin(set([np.inf, -np.inf, np.nan]))].to_numpy()
 
 
 def histogram(values: np.ndarray,
@@ -136,10 +130,10 @@ def render_message(table, message):
             'offset': 15,
             'color': '#383838',
             'font': 'Nunito Sans, Helvetica, sans-serif',
-            'fontSize': 25,
+            'fontSize': 15,
             'fontWeight': 'normal',
             'anchor': 'middle',
-            },
+        },
         'mark': 'point',
         'config': {
             'style': {
@@ -152,21 +146,21 @@ def render_message(table, message):
 
 
 def render(table, params):
-    error = None
-    json_dict = None
-
     column = params['column']
     if not column:
-        return render_message(table, 'Please choose a numeric column')
+        return render_message(table, 'Please choose a number column')
 
     raw_series = table[column]
+    if not is_numeric_dtype(raw_series):
+        return render_message(table, 'Please choose a number column')
+
     n_bins = max(2, min(500, int(params['n_buckets'])))
 
     table_values = safe_values(raw_series)
-    if len(table_values) < 2:
+    if not len(table_values) or np.min(table_values) == np.max(table_values):
         return render_message(
             table,
-            'Please choose a numeric column with at least two numeric values'
+            'Please choose a number column with at least two distinct values'
         )
 
     counts, ticks = histogram(table_values, n_bins)
@@ -233,4 +227,4 @@ def render(table, params):
         },
     }
 
-    return (table, error, json_dict)
+    return (table, '', json_dict)
