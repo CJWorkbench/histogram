@@ -4,7 +4,21 @@ import unittest
 import numpy
 import pandas
 from pandas.testing import assert_frame_equal
-from histogram import nice_range, safe_values, histogram, render
+from histogram import nice_range, safe_values, histogram, migrate_params, render
+
+
+class MigrateParamsTest(unittest.TestCase):
+    def test_v0(self):
+        self.assertEqual(
+            migrate_params({"column": "A", "n_buckets": 20}),
+            {"column": "A", "n_buckets": 20, "title": ""},
+        )
+
+    def test_v1(self):
+        self.assertEqual(
+            migrate_params({"column": "A", "n_buckets": 20, "title": "Good"}),
+            {"column": "A", "n_buckets": 20, "title": "Good"},
+        )
 
 
 class NiceRangeTest(unittest.TestCase):

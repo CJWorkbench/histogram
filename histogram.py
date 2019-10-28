@@ -214,3 +214,18 @@ def render(table, params):
     }
 
     return (table, "", json_dict)
+
+
+def _migrate_params_v0_to_v1(params):
+    """
+    v0: {column, n_buckets}
+
+    v1: {column, n_buckets, title}
+    """
+    return {**params, "title": ""}
+
+
+def migrate_params(params):
+    if "title" not in params:
+        params = _migrate_params_v0_to_v1(params)
+    return params
