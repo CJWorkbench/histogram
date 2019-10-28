@@ -64,7 +64,7 @@ def nice_range(values: np.ndarray, n_bins: int) -> Tuple[float, float]:
         # equivalent to not np.any(np.mod(values, 1/step))
         # Note, this is the path that values=[1,2,3,4,5,6], n_bins=6 will hit
         # (step=-1 then as (6-1)/6 < 1)
-        if not np.any(np.mod(values*step, 1)):
+        if not np.any(np.mod(values * step, 1)):
             additional_step = 1
 
     # negative step signals that it's actually the inverse step (see
@@ -98,8 +98,7 @@ def safe_values(series: pd.Series) -> np.ndarray:
     return series[~series.isin(set([np.inf, -np.inf, np.nan]))].to_numpy()
 
 
-def histogram(values: np.ndarray,
-              n_bins: int) -> Tuple[List[float], List[float]]:
+def histogram(values: np.ndarray, n_bins: int) -> Tuple[List[float], List[float]]:
     """
     Computes (counts, ticks).
 
@@ -124,107 +123,94 @@ def histogram(values: np.ndarray,
 
 # Displays message in chart output, but not module error
 def render_message(table, message):
-    return (table, '', {
-        "title": {
-            "text": message,
-            'offset': 15,
-            'color': '#383838',
-            'font': 'Nunito Sans, Helvetica, sans-serif',
-            'fontSize': 15,
-            'fontWeight': 'normal',
-            'anchor': 'middle',
-        },
-        'mark': 'point',
-        'config': {
-            'style': {
-                'cell': {
-                    'stroke': 'transparent',
-                },
+    return (
+        table,
+        "",
+        {
+            "title": {
+                "text": message,
+                "offset": 15,
+                "color": "#383838",
+                "font": "Nunito Sans, Helvetica, sans-serif",
+                "fontSize": 15,
+                "fontWeight": "normal",
+                "anchor": "middle",
             },
+            "mark": "point",
+            "config": {"style": {"cell": {"stroke": "transparent"}}},
         },
-    })
+    )
 
 
 def render(table, params):
-    column = params['column']
+    column = params["column"]
     if not column:
-        return render_message(table, 'Please choose a number column')
+        return render_message(table, "Please choose a number column")
 
     raw_series = table[column]
     if not is_numeric_dtype(raw_series):
-        return render_message(table, 'Please choose a number column')
+        return render_message(table, "Please choose a number column")
 
-    n_bins = max(2, min(500, int(params['n_buckets'])))
+    n_bins = max(2, min(500, int(params["n_buckets"])))
 
     table_values = safe_values(raw_series)
     if not len(table_values) or np.min(table_values) == np.max(table_values):
         return render_message(
-            table,
-            'Please choose a number column with at least two distinct values'
+            table, "Please choose a number column with at least two distinct values"
         )
 
     counts, ticks = histogram(table_values, n_bins)
 
-    bins = [{'min': bounds[0], 'max': bounds[1], 'n': n}
-            for n, bounds in zip(counts, _pairwise(ticks))]
+    bins = [
+        {"min": bounds[0], "max": bounds[1], "n": n}
+        for n, bounds in zip(counts, _pairwise(ticks))
+    ]
 
-    if 'title' in params and params['title'] != '':
-        title = params['title']
+    if "title" in params and params["title"] != "":
+        title = params["title"]
     else:
-        title = f'Histogram of {column}'
+        title = f"Histogram of {column}"
 
     json_dict = {
-        '$schema': 'https://vega.github.io/schema/vega-lite/v2.0.json',
+        "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
         "title": {
             "text": title,
-            'offset': 15,
-            'color': '#383838',
-            'font': 'Nunito Sans, Helvetica, sans-serif',
-            'fontSize': 20,
-            'fontWeight': 'normal',
-            },
-
-        'data': {'values': bins},
+            "offset": 15,
+            "color": "#383838",
+            "font": "Nunito Sans, Helvetica, sans-serif",
+            "fontSize": 20,
+            "fontWeight": "normal",
+        },
+        "data": {"values": bins},
         # TODO use Vega-lite "prebinned" feature when it's available.
         # In the meantime, this is modeled after
         # https://github.com/vega/vega-lite/issues/2912#issuecomment-388987973
-        'mark': 'rect',
-        'encoding': {
-            'x': {
-                'field': 'min',
-                'type': 'quantitative',
-                'scale': {
-                    'zero': False,
-                },
-                'axis': {
-                    'title': f'{column}',
-                    'grid': False,
-                    'tickCount': n_bins + 1,
-                    'values': ticks,
-                    'tickSize': 3,
-                    'titlePadding': 20,
+        "mark": "rect",
+        "encoding": {
+            "x": {
+                "field": "min",
+                "type": "quantitative",
+                "scale": {"zero": False},
+                "axis": {
+                    "title": f"{column}",
+                    "grid": False,
+                    "tickCount": n_bins + 1,
+                    "values": ticks,
+                    "tickSize": 3,
+                    "titlePadding": 20,
                     # 'titleFontSize': 15,
                     # 'titleFontWeight': 100, -- do not work?
                 },
             },
-            'x2': {
-                'field': 'max',
-                'type': 'quantitative',
+            "x2": {"field": "max", "type": "quantitative"},
+            "y2": {
+                "field": "n",
+                "type": "quantitative",
+                "axis": {"title": "Frequency", "domain": False, "titlePadding": 20},
             },
-            'y2': {
-                'field': 'n',
-                'type': 'quantitative',
-                'axis': {
-                    'title': 'Frequency',
-                    'domain': False,
-                    'titlePadding': 20,
-                },
-            },
-            'y': {
-                'value': 0,
-            },
-            'color': {'value': '#FBAA6D'},
+            "y": {"value": 0},
+            "color": {"value": "#FBAA6D"},
         },
     }
 
-    return (table, '', json_dict)
+    return (table, "", json_dict)
