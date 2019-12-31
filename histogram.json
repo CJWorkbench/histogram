@@ -3,7 +3,7 @@
   "id_name": "histogram",
   "category" : "Visualize",
   "icon" : "chart",
-  "description" : "Chart the distribution of numerical data.",
+  "description" : "Visualize the distribution of numerical data.",
   "html_output": true,
   "help_url":"modules/visualization/histogram",
   "parameters": [
