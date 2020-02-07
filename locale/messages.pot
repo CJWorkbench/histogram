@@ -1,0 +1,20 @@
+#. default-message: Histogram
+msgid "_spec.name"
+msgstr ""
+
+#. default-message: Visualize the distribution of numerical data.
+msgid "_spec.description"
+msgstr ""
+
+#. default-message: Column
+msgid "_spec.parameters.column.name"
+msgstr ""
+
+#. default-message: Suggested number of bins
+msgid "_spec.parameters.n_buckets.name"
+msgstr ""
+
+#. default-message: Title
+msgid "_spec.parameters.title.name"
+msgstr ""
+
