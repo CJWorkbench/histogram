@@ -1,0 +1,36 @@
+# English translations for PROJECT.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-01-07 06:45+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+msgid "_spec.name"
+msgstr "Histogram"
+
+msgid "_spec.description"
+msgstr "Visualize the distribution of numerical data."
+
+msgid "_spec.parameters.column.name"
+msgstr "Column"
+
+msgid "_spec.parameters.n_buckets.name"
+msgstr "Suggested number of bins"
+
+msgid "_spec.parameters.title.name"
+msgstr "Title"
+
