@@ -18,3 +18,18 @@ msgstr ""
 msgid "_spec.parameters.title.name"
 msgstr ""
 
+#. default-message: Please choose a number column
+#: histogram.py:150
+msgid "errors.noColumnSelected"
+msgstr ""
+
+#. default-message: Please choose a number column
+#: histogram.py:156
+msgid "errors.columnType"
+msgstr ""
+
+#. default-message: Please choose a number column with at least two distinct values
+#: histogram.py:165
+msgid "errors.notEnoughValues"
+msgstr ""
+

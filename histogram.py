@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from typing import List, Tuple
+from cjwmodule.i18n import trans
 
 
 def _pairwise(iterable):
@@ -121,14 +122,14 @@ def histogram(values: np.ndarray, n_bins: int) -> Tuple[List[float], List[float]
     return (counts.tolist(), buckets.tolist())
 
 
-# Displays message in chart output, but not module error
+# Displays message in chart output and module error
 def render_message(table, message):
     return (
         table,
-        "",
+        message,
         {
             "title": {
-                "text": message,
+                "text": "Please correct the error in this step's data or parameters",  # TODO_i18n
                 "offset": 15,
                 "color": "#383838",
                 "font": "Nunito Sans, Helvetica, sans-serif",
@@ -145,18 +146,26 @@ def render_message(table, message):
 def render(table, params):
     column = params["column"]
     if not column:
-        return render_message(table, "Please choose a number column")
+        return render_message(
+            table, trans("errors.noColumnSelected", "Please choose a number column")
+        )
 
     raw_series = table[column]
     if not is_numeric_dtype(raw_series):
-        return render_message(table, "Please choose a number column")
+        return render_message(
+            table, trans("errors.columnType", "Please choose a number column")
+        )
 
     n_bins = max(2, min(500, int(params["n_buckets"])))
 
     table_values = safe_values(raw_series)
     if not len(table_values) or np.min(table_values) == np.max(table_values):
         return render_message(
-            table, "Please choose a number column with at least two distinct values"
+            table,
+            trans(
+                "errors.notEnoughValues",
+                "Please choose a number column with at least two distinct values",
+            ),
         )
 
     counts, ticks = histogram(table_values, n_bins)
