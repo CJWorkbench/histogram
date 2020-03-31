@@ -152,13 +152,3 @@ class RenderTest(unittest.TestCase):
         assert_frame_equal(table, pandas.DataFrame({"A": [5.1, 2.1]}))
         self.assertEqual(error, "")
         self.assertEqual(json_dict["title"]["text"], "Please choose a number column")
-
-    def test_non_number_is_error(self):
-        table, error, json_dict = render(
-            pandas.DataFrame({"A": ["5"]}),
-            {"column": "A", "n_buckets": 5, "title": "My Title"},
-        )
-        # Output table is same as input
-        assert_frame_equal(table, pandas.DataFrame({"A": ["5"]}))
-        self.assertEqual(error, "")
-        self.assertEqual(json_dict["title"]["text"], "Please choose a number column")
