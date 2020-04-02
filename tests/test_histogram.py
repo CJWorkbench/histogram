@@ -145,15 +145,6 @@ class RenderTest(unittest.TestCase):
         )
         # Output table is same as input
         assert_frame_equal(table, pandas.DataFrame({"A": [5.1, 2.1]}))
-        self.assertEqual(error, i18n_message("errors.noColumnSelected"))
-        self.assertTrue(json_dict["title"]["text"])
 
-    def test_non_number_is_error(self):
-        table, error, json_dict = render(
-            pandas.DataFrame({"A": ["5"]}),
-            {"column": "A", "n_buckets": 5, "title": "My Title"},
-        )
-        # Output table is same as input
-        assert_frame_equal(table, pandas.DataFrame({"A": ["5"]}))
-        self.assertEqual(error, i18n_message("errors.columnType"))
+        self.assertEqual(error, i18n_message("errors.noColumnSelected"))
         self.assertTrue(json_dict["title"]["text"])

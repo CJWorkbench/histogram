@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-03-12 11:01+0000\n"
+"POT-Creation-Date: 2020-04-02 12:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -34,15 +34,11 @@ msgstr "Suggested number of bins"
 msgid "_spec.parameters.title.name"
 msgstr "Title"
 
-#: histogram.py:150
+#: histogram.py:152
 msgid "errors.noColumnSelected"
 msgstr "Please choose a number column"
 
-#: histogram.py:156
-msgid "errors.columnType"
-msgstr "Please choose a number column"
-
-#: histogram.py:165
+#: histogram.py:163
 msgid "errors.notEnoughValues"
 msgstr "Please choose a number column with at least two distinct values"
 

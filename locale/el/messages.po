@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-03-12 11:01+0000\n"
+"POT-Creation-Date: 2020-04-02 12:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: el\n"
@@ -34,15 +34,11 @@ msgstr "Προτεινόμενος αριθμός ορθογωνίων"
 msgid "_spec.parameters.title.name"
 msgstr "Τίτλος"
 
-#: histogram.py:150
+#: histogram.py:152
 msgid "errors.noColumnSelected"
 msgstr "Επιλέξτε στήλη αριθμών"
 
-#: histogram.py:156
-msgid "errors.columnType"
-msgstr "Επιλέξτε στήλη αριθμών"
-
-#: histogram.py:165
+#: histogram.py:163
 msgid "errors.notEnoughValues"
 msgstr "Επιλέξτε στήλη αριθμών με τουλάχιστον δύο διαφορετικές τιμές"
 

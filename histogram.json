@@ -10,7 +10,8 @@
     {
       "name": "Column",
       "id_name": "column",
-      "type": "column"
+      "type": "column",
+      "column_types": [ "number" ]
     },
     {
       "name": "Suggested number of bins",

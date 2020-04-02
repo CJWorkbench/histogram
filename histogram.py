@@ -1,9 +1,11 @@
 import itertools
 import math
+from typing import List, Tuple
+
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
-from typing import List, Tuple
+
 from cjwmodule.i18n import trans
 
 
@@ -151,10 +153,6 @@ def render(table, params):
         )
 
     raw_series = table[column]
-    if not is_numeric_dtype(raw_series):
-        return render_message(
-            table, trans("errors.columnType", "Please choose a number column")
-        )
 
     n_bins = max(2, min(500, int(params["n_buckets"])))
 
