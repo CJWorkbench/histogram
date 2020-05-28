@@ -5,6 +5,7 @@ import numpy
 import pandas
 from pandas.testing import assert_frame_equal
 from histogram import nice_range, safe_values, histogram, migrate_params, render
+from cjwmodule.testing.i18n import i18n_message
 
 
 class MigrateParamsTest(unittest.TestCase):
@@ -124,11 +125,8 @@ class RenderTest(unittest.TestCase):
         )
         # Output table is same as input
         assert_frame_equal(table, pandas.DataFrame({"A": [1.1, 1.1, 1.1]}))
-        self.assertEqual(error, "")
-        self.assertEqual(
-            json_dict["title"]["text"],
-            "Please choose a number column with at least two distinct values",
-        )
+        self.assertEqual(error, i18n_message("errors.notEnoughValues"))
+        self.assertTrue(json_dict["title"]["text"])
 
     def test_zero_values_is_error(self):
         table, error, json_dict = render(
@@ -137,11 +135,8 @@ class RenderTest(unittest.TestCase):
         )
         # Output table is same as input
         assert_frame_equal(table, pandas.DataFrame({"A": [numpy.nan]}))
-        self.assertEqual(error, "")
-        self.assertEqual(
-            json_dict["title"]["text"],
-            "Please choose a number column with at least two distinct values",
-        )
+        self.assertEqual(error, i18n_message("errors.notEnoughValues"))
+        self.assertTrue(json_dict["title"]["text"])
 
     def test_no_column_is_error(self):
         table, error, json_dict = render(
@@ -150,5 +145,6 @@ class RenderTest(unittest.TestCase):
         )
         # Output table is same as input
         assert_frame_equal(table, pandas.DataFrame({"A": [5.1, 2.1]}))
-        self.assertEqual(error, "")
-        self.assertEqual(json_dict["title"]["text"], "Please choose a number column")
+
+        self.assertEqual(error, i18n_message("errors.noColumnSelected"))
+        self.assertTrue(json_dict["title"]["text"])
