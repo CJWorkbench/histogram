@@ -179,7 +179,7 @@ def render(table, params):
         title = f"Histogram of {column}"
 
     json_dict = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.0.json",
+        "$schema": "https://vega.github.io/schema/vega-lite/v4.0.json",
         "title": {
             "text": title,
             "offset": 15,
@@ -189,17 +189,15 @@ def render(table, params):
             "fontWeight": "normal",
         },
         "data": {"values": bins},
-        # TODO use Vega-lite "prebinned" feature when it's available.
-        # In the meantime, this is modeled after
-        # https://github.com/vega/vega-lite/issues/2912#issuecomment-388987973
-        "mark": "rect",
+        "mark": "bar",
         "encoding": {
             "x": {
                 "field": "min",
+                "bin": "binned",
                 "type": "quantitative",
                 "scale": {"zero": False},
                 "axis": {
-                    "title": f"{column}",
+                    "title": column,
                     "grid": False,
                     "tickCount": n_bins + 1,
                     "values": ticks,
@@ -210,12 +208,15 @@ def render(table, params):
                 },
             },
             "x2": {"field": "max", "type": "quantitative"},
-            "y2": {
+            "y": {
                 "field": "n",
                 "type": "quantitative",
-                "axis": {"title": "Frequency", "domain": False, "titlePadding": 20},
+                "axis": {
+                    "title": "Frequency",
+                    "domain": False,
+                    "titlePadding": 20,
+                },
             },
-            "y": {"value": 0},
             "color": {"value": "#FBAA6D"},
         },
     }
