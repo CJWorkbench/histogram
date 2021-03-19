@@ -2,7 +2,7 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8">
-    <title>Histogram output</title>
+    <title>Histogram</title>
     <style>
       html, body {
         box-sizing: border-box;
@@ -36,14 +36,11 @@
     </style>
   </head>
   <body>
-    <main></main>
+    <main><div id="vega"></div></main>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <script>
-      const main = document.querySelector('main')
-      let vegaViewPromise = Promise.resolve(null)
-
       const loadingSpec = {
         "title": "loading",
         "mark": "point",
@@ -68,32 +65,49 @@
         }
       }
 
-      function renderData(spec) {
-        if (!spec) {
-          spec = emptySpec
+      const messageOrigin = new URL(document.location).searchParams.get('origin')
+      let dataUrl = new URL(document.location).searchParams.get('dataUrl')
+      let currentFetch = null
+
+      const el = document.querySelector('#vega')
+      let lastSpec = loadingSpec
+      let lastViewPromise = null
+
+      function reRender () {
+        if (lastViewPromise !== null) {
+          lastViewPromise.then(view => view.view.finalize())
         }
 
-        vegaViewPromise = vegaEmbed(main, spec, {
-          config: {
-            autosize: {
-              type: 'fit',
-              contains: 'padding'
-            },
-            style: {
-              cell: {
-                stroke: 'transparent',
-              }
-            },
-          }
+        const sizedSpec = {
+          ...lastSpec,
+          width: el.parentNode.clientWidth,
+          height: el.parentNode.clientHeight,
+          autosize: {
+            type: 'fit',
+            contains: 'padding'
+          },
+        }
+        return lastViewPromise = vegaEmbed(el, sizedSpec, {
+          renderer: 'svg' // helps us integration-test
         })
-        resetSize()
+      }
+
+      function renderData (spec) {
+        if (!spec) {
+          lastSpec = emptySpec
+        } else {
+          lastSpec = spec
+        }
+
+        reRender()
       }
 
       function startLoading () {
         renderData(loadingSpec)
 
-        const url = String(window.location).replace(/\/output.*/, '/embeddata')
-        fetch(url, { credentials: 'same-origin' })
+        const thisFetch = currentFetch = fetch(dataUrl, { credentials: 'same-origin' })
+
+        thisFetch
           .then(function(response) {
             if (!response.ok) {
               throw new Error('Invalid response code: ' + response.status)
@@ -101,24 +115,36 @@
 
             return response.json()
           })
-          .then(renderData)
-          .catch(console.error)
+          .catch(err => {
+            console.error(err)
+            return emptySpec
+          })
+          .then(data => {
+            if (thisFetch !== currentFetch) {
+              return // another fetch came after
+            }
+            renderData(data)
+          })
       }
 
-      function resetSize() {
-        vegaViewPromise.then(function (view) {
-          if (view === null) return // init
-          const width = document.body.clientWidth
-          const height = document.body.clientHeight
-          view.view
-            .width(width)
-            .height(height)
-            .run()
-        })
+      if (messageOrigin) {
+        function handleMessage (ev) {
+          if (ev.source !== window.parent || ev.origin !== messageOrigin) {
+            return
+          }
+
+          if (ev.data.type === 'set-data-url') {
+            if (dataUrl !== ev.data.dataUrl) {
+              dataUrl = ev.data.dataUrl
+              startLoading()
+            }
+          }
+        }
+        window.addEventListener('message', handleMessage)
+        window.parent.postMessage({ type: 'subscribe-to-data-url' }, messageOrigin)
       }
 
-      window.addEventListener('hashchange', startLoading)
-      window.addEventListener('resize', resetSize)
+      window.addEventListener('resize', reRender)
 
       startLoading()
     </script>
